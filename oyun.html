@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="index.html">
+</head>
+<body style=" background-color: aquamarine; ">
+        <canvas id="c" width="500" height="500" style="background-color:white ; border:1px solid black;color:violet"></canvas>
+    
+     <script>
+        let x=0;
+        let y=0;
+        let durum=false;
+        let durum2=false;
+        let hiz = 20;
+       skor=0;
+
+        let p = 300;
+        let n = 300;
+        const peynir = new Image();
+        peynir.src = "peynir.jpg";
+      
+        const canvas=document.getElementById("c");
+        const ctx=canvas.getContext("2d");
+        const img = new Image();
+    img.src = 'karakter.jpg';
+ 
+        const kapan = new Image();
+        kapan.src = "farekapanı.jpg";
+        let kx = 0;                  
+        let ky = 200;
+        let kx2 = -150; // Bu kapan biraz daha geriden başlasın diye eksi değer verdik
+        let ky2 = 350;
+    
+        function draw(){
+            
+
+
+            ctx.clearRect(0,0,500,500);
+            ctx.drawImage(peynir, p, n, 50, 50);
+            
+            ctx.drawImage(img,x,y,60,60);
+          
+        ctx.fillText("Skor: " + skor, 20, 480);
+
+
+
+
+
+
+
+    kx += 2; // Kapanı her karede 2 piksel sağa kaydır (Hızı)
+        if (kx > 500) { kx = -40; } // Sağdan çıkınca soldan tekrar başlat
+
+        ctx.drawImage(kapan, kx, ky, 40, 40); // Kapanı ekrana 40x40 boyutunda çiz
+
+        // Karakter kapana çarptı mı kontrolü (Aşırı düz mantık)
+        if (x < kx + 40 && x + 60 > kx && y < ky + 40 && y + 60 > ky) {
+            x = 0;    // Karakteri başa at
+            y = 0;
+        }
+        // === EN BASİT HAREKET VE ÇARPIŞMA EKLEME BİTİŞİ ===
+kx2 += 3; // İkinci kapanın hızı biraz daha farklı (3 piksel) olsun dedik
+        if (kx2 > 500) { kx2 = -40; } 
+        ctx.drawImage(kapan, kx2, ky2, 40, 40); 
+
+        if (x < kx2 + 40 && x + 60 > kx2 && y < ky2 + 40 && y + 60 > ky2) {
+            x = 0;    
+            y = 0;
+        }
+        
+
+
+
+
+
+           
+        if (x < p + 40 && x + 40 >  p && y < n + 40 && y + 40 > n) {
+                // kordinat
+                p = Math.floor(Math.random() * 440);
+                n = Math.floor(Math.random() * 440);
+              skor+=1;
+               
+            }
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+        document.addEventListener("keydown",function(e){
+          durum=true ;
+          if (e.key === "ArrowRight") {
+            
+                x += hiz; // Sağa git
+            } else if (e.key === "ArrowLeft") {
+                x -= hiz; // Sola git
+            } else if (e.key === "ArrowUp") {
+                y -= hiz; // Yukarı git
+            } else if (e.key === "ArrowDown") {
+                y += hiz; // Aşağı git
+            }
+            
+              if (x < 0) x = 0;
+            if (y < 0) y = 0;
+            if (x > 440) x = 440; 
+            if (y > 440) y = 440;
+        });
+          
+
+       
+        draw();
+       
+
+        </script><br>
+<a href="index.html">anasayfaya dön</a><br><p>(✿◡‿◡)</p>
+</body>
+</html>
