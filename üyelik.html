@@ -6,7 +6,6 @@
     <title>Üyelik Sistemi</title>
 
     <style>
-
     body{
         background-color:brown;
         font-family: Arial;
@@ -24,7 +23,8 @@
         border-radius: 10px;
     }
 
-    input{
+    /* Sadece text, email ve password inputlarını etkilesin, radio butonları bozmasın diye güncellendi */
+    input[type="text"], input[type="email"], input[type="password"] {
         width: 90%;
         padding: 8px;
     }
@@ -38,15 +38,11 @@
         border:none;
         margin-top:15px;
     }
-
     </style>
-
 </head>
-
 <body>
 
 <div class="kutu">
-
     <h2>Adınızı Giriniz</h2>
     <input type="text" id="ad" placeholder="Adınızı giriniz"><br>
 
@@ -80,17 +76,12 @@
     </label>
 
     <button onclick="kayitOl()">Kayıt Ol</button>
-
     <br>
-
     <a href="index.html">Anasayfaya Dön</a>
-
 </div>
 
-
 <script type="module">
-
-// Firebase importları
+// 1. Firebase importları
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
@@ -104,55 +95,39 @@ import {
     setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-
 // KENDİ FIREBASE BİLGİLERİNİ BURAYA YAPIŞTIR
 const firebaseConfig = {
-
-     apiKey: "AIzaSyDa5AWwxhf7mjzf-W-3CT4WBQhuZ0KVedo",
-  authDomain: "farepeynir-d1df0.firebaseapp.com",
-  projectId: "farepeynir-d1df0",
-  storageBucket: "farepeynir-d1df0.firebasestorage.app",
-  messagingSenderId: "815151330283",
-  appId: "1:815151330283:web:f36af249f1701616351fae",
- 
-
+    apiKey: "AIzaSyDa5AWwxhf7mjzf-W-3CT4WBQhuZ0KVedo",
+    authDomain: "farepeynir-d1df0.firebaseapp.com",
+    projectId: "farepeynir-d1df0",
+    storageBucket: "farepeynir-d1df0.firebasestorage.app",
+    messagingSenderId: "815151330283",
+    appId: "1:815151330283:web:f36af249f1701616351fae"
 };
 
+// 2. Firebase Başlatma ve Servisleri Değişkenlere Atama
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-
+const auth = getAuth(app); // Eksikti, eklendi.
+const db = getFirestore(app); // Eksikti, eklendi.
 
 // Kayıt sistemi
 window.kayitOl = async function(){
-
     const ad = document.getElementById("ad").value;
-
     const soyad = document.getElementById("soyad").value;
-
     const email = document.getElementById("email").value;
-
     const kullaniciAdi = document.getElementById("kullaniciAdi").value;
-
     const sifre = document.getElementById("sifre").value;
-
 
     // Seçilen takım
     const takimSecimi = document.querySelector('input[name="takim"]:checked');
-
     const takim = takimSecimi ? takimSecimi.value : "";
 
-
     if(ad == "" || soyad == "" || email == "" || kullaniciAdi == "" || sifre == ""){
-
         alert("Lütfen tüm alanları doldurun");
-
         return;
     }
 
-
     try{
-
         // Firebase Auth kayıt
         const userCredential = await createUserWithEmailAndPassword(
             auth,
@@ -162,35 +137,24 @@ window.kayitOl = async function(){
 
         const user = userCredential.user;
 
-
         // Firestore veri kaydı
         await setDoc(doc(db, "kullanicilar", user.uid), {
-
             ad: ad,
             soyad: soyad,
             email: email,
             kullaniciAdi: kullaniciAdi,
             takim: takim,
             uid: user.uid
-
         });
 
-
         alert("Kayıt başarılı!");
-
         console.log("Kullanıcı oluşturuldu");
 
-
     }catch(error){
-
-        alert(error.message);
-
-        console.log(error);
-
+        alert("Hata: " + error.message);
+        console.error(error);
     }
-
 }
-
 </script>
 
 </body>
