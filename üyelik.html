@@ -1,143 +1,286 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Üyelik Sistemi</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-    body{
-        background-color:brown;
-        font-family: Arial, sans-serif;
-    }
+<title>Üyelik Sistemi</title>
 
-    .kutu{
-        width: 300px;
-        margin: 30px auto;
-        border: 5px solid black;
-        background-color: azure;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-        border-radius: 10px;
-    }
+<style>
 
-    input{
-        width: 90%;
-        padding: 8px;
-        margin-bottom: 10px;
-    }
+body{
+    background:brown;
+    font-family:Arial;
+}
 
-    button{
-        padding:10px;
-        width:95%;
-        cursor:pointer;
-        background:black;
-        color:white;
-        border:none;
-        margin-top:15px;
-    }
-    </style>
+.kutu{
+    width:350px;
+    margin:30px auto;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    border:4px solid black;
+}
+
+input{
+    width:95%;
+    padding:10px;
+    margin-bottom:10px;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    background:black;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+ul{
+    padding:0;
+}
+
+li{
+    list-style:none;
+    background:#f1f1f1;
+    margin-top:10px;
+    padding:10px;
+    border-radius:5px;
+}
+
+</style>
+
 </head>
 
 <body>
 
 <div class="kutu">
-    <h2>Adınızı Giriniz</h2>
-    <input type="text" id="ad" placeholder="Adınızı giriniz">
 
-    <h2>Soyadınızı Giriniz</h2>
-    <input type="text" id="soyad" placeholder="Soyadınızı giriniz">
+<h2>Ad</h2>
+<input type="text" id="ad" placeholder="Adınız">
 
-    <h2>E-postanızı Giriniz</h2>
-    <input type="email" id="email" placeholder="@işareti kullanarak giriniz">
+<h2>Soyad</h2>
+<input type="text" id="soyad" placeholder="Soyadınız">
 
-    <h2>Kullanıcı Adı</h2>
-    <input type="text" id="kullaniciAdi" placeholder="Kullanıcı adı girin">
+<h2>Email</h2>
+<input type="email" id="email" placeholder="Email">
 
-    <h2>Şifre</h2>
-    <input type="password" id="sifre" placeholder="Şifre giriniz">
+<h2>Kullanıcı Adı</h2>
+<input type="text" id="kullaniciAdi" placeholder="Kullanıcı Adı">
 
-    <h2>Takım Seçin</h2>
-    <label>
-        <input type="radio" name="takim" value="Beşiktaş"> Beşiktaş
-    </label>
-    <label>
-        <input type="radio" name="takim" value="Galatasaray"> Galatasaray
-    </label>
-    <label>
-        <input type="radio" name="takim" value="Fenerbahçe"> Fenerbahçe
-    </label>
+<h2>Şifre</h2>
+<input type="password" id="sifre" placeholder="Şifre">
 
-    <button onclick="kayitOl()">Kayıt Ol</button>
-    <br>
-    <a href="index.html">Anasayfaya Dön</a>
+<h2>Takım Seç</h2>
+
+<label>
+<input type="radio" name="takim" value="Beşiktaş">
+Beşiktaş
+</label>
+
+<br>
+
+<label>
+<input type="radio" name="takim" value="Galatasaray">
+Galatasaray
+</label>
+
+<br>
+
+<label>
+<input type="radio" name="takim" value="Fenerbahçe">
+Fenerbahçe
+</label>
+
+<br><br>
+
+<button onclick="kayitOl()">
+Kayıt Ol
+</button>
+
+<h2>Kayıtlı Kullanıcılar</h2>
+
+<ul id="kullaniciListesi"></ul>
+
 </div>
 
 <script type="module">
 
-// Firebase importları
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Kendi Firebase bilgilerinizi buraya yapıştırın
+import {
+getAuth,
+createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+setDoc,
+collection,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+// Firebase Ayarların
+
 const firebaseConfig = {
-    apiKey: "AIzaSyDa5AWwxhf7mjzf-W-3CT4WBQhuZ0KVedo",
-    authDomain: "farepeynir-d1df0.firebaseapp.com",
-    projectId: "farepeynir-d1df0",
-    storageBucket: "farepeynir-d1df0.appspot.com",
-    messagingSenderId: "815151330283",
-    appId: "1:815151330283:web:f36af249f1701616351fae"
+
+apiKey: "AIzaSyDa5AWwxhf7mjzf-W-3CT4WBQhuZ0KVedo",
+
+authDomain: "farepeynir-d1df0.firebaseapp.com",
+
+projectId: "farepeynir-d1df0",
+
+storageBucket: "farepeynir-d1df0.appspot.com",
+
+messagingSenderId: "815151330283",
+
+appId: "1:815151330283:web:f36af249f1701616351fae"
+
 };
 
-// Firebase başlat
+
+// Firebase Başlat
+
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);       // Auth instance
-const db = getFirestore(app);    // Firestore instance
 
-// Kayıt fonksiyonu
-window.kayitOl = async function() {
-    const ad = document.getElementById("ad").value;
-    const soyad = document.getElementById("soyad").value;
-    const email = document.getElementById("email").value;
-    const kullaniciAdi = document.getElementById("kullaniciAdi").value;
-    const sifre = document.getElementById("sifre").value;
+const auth = getAuth(app);
 
-    const takimSecimi = document.querySelector('input[name="takim"]:checked');
-    const takim = takimSecimi ? takimSecimi.value : "";
+const db = getFirestore(app);
 
-    if(ad === "" || soyad === "" || email === "" || kullaniciAdi === "" || sifre === ""){
-        alert("Lütfen tüm alanları doldurun");
-        return;
-    }
 
-    try {
-        // Firebase Auth ile kullanıcı oluştur
-        const userCredential = await createUserWithEmailAndPassword(auth, email, sifre);
-        const user = userCredential.user;
 
-        // Firestore veri kaydı
-        await setDoc(doc(db, "kullanicilar", user.uid), {
-            ad: ad,
-            soyad: soyad,
-            email: email,
-            kullaniciAdi: kullaniciAdi,
-            takim: takim,
-            uid: user.uid
-        });
+// KAYIT OL
 
-        alert("Kayıt başarılı!");
-        console.log("Kullanıcı oluşturuldu:", user.uid);
+window.kayitOl = async function(){
 
-    } catch(error) {
-        alert(error.message);
-        console.error(error);
-    }
+const ad = document.getElementById("ad").value;
+
+const soyad = document.getElementById("soyad").value;
+
+const email = document.getElementById("email").value;
+
+const kullaniciAdi = document.getElementById("kullaniciAdi").value;
+
+const sifre = document.getElementById("sifre").value;
+
+const takimSecimi = document.querySelector('input[name="takim"]:checked');
+
+const takim = takimSecimi ? takimSecimi.value : "";
+
+
+// Boş alan kontrolü
+
+if(
+ad === "" ||
+soyad === "" ||
+email === "" ||
+kullaniciAdi === "" ||
+sifre === ""
+){
+alert("Tüm alanları doldurun");
+return;
 }
+
+
+try{
+
+// Firebase Auth kayıt
+
+const userCredential = await createUserWithEmailAndPassword(
+auth,
+email,
+sifre
+);
+
+const user = userCredential.user;
+
+
+// Firestore kayıt
+
+await setDoc(doc(db,"kullanicilar",user.uid),{
+
+ad: ad,
+
+soyad: soyad,
+
+email: email,
+
+kullaniciAdi: kullaniciAdi,
+
+takim: takim,
+
+uid: user.uid
+
+});
+
+alert("Kayıt başarılı");
+
+
+// Listeyi Güncelle
+
+kullanicilariGetir();
+
+}
+catch(error){
+
+alert(error.message);
+
+console.log(error);
+
+}
+
+}
+
+
+
+// KULLANICILARI GETİR
+
+async function kullanicilariGetir(){
+
+const liste = document.getElementById("kullaniciListesi");
+
+liste.innerHTML = "";
+
+const querySnapshot = await getDocs(
+collection(db,"kullanicilar")
+);
+
+querySnapshot.forEach((doc) => {
+
+const veri = doc.data();
+
+const li = document.createElement("li");
+
+li.innerHTML = `
+
+<b>${veri.ad} ${veri.soyad}</b>
+<br>
+
+Email: ${veri.email}
+<br>
+
+Kullanıcı Adı: ${veri.kullaniciAdi}
+<br>
+
+Takım: ${veri.takim}
+
+`;
+
+liste.appendChild(li);
+
+});
+
+}
+
+
+// Sayfa Açılınca Listele
+
+kullanicilariGetir();
+
 </script>
 
 </body>
 </html>
-
