@@ -8,7 +8,7 @@
     <style>
     body{
         background-color:brown;
-        font-family: Arial;
+        font-family: Arial, sans-serif;
     }
 
     .kutu{
@@ -23,10 +23,10 @@
         border-radius: 10px;
     }
 
-    /* Sadece text, email ve password inputlarını etkilesin, radio butonları bozmasın diye güncellendi */
-    input[type="text"], input[type="email"], input[type="password"] {
+    input{
         width: 90%;
         padding: 8px;
+        margin-bottom: 10px;
     }
 
     button{
@@ -40,39 +40,34 @@
     }
     </style>
 </head>
+
 <body>
 
 <div class="kutu">
     <h2>Adınızı Giriniz</h2>
-    <input type="text" id="ad" placeholder="Adınızı giriniz"><br>
+    <input type="text" id="ad" placeholder="Adınızı giriniz">
 
     <h2>Soyadınızı Giriniz</h2>
-    <input type="text" id="soyad" placeholder="Soyadınızı giriniz"><br>
+    <input type="text" id="soyad" placeholder="Soyadınızı giriniz">
 
     <h2>E-postanızı Giriniz</h2>
-    <input type="email" id="email" placeholder="@işareti kullanarak giriniz"><br>
+    <input type="email" id="email" placeholder="@işareti kullanarak giriniz">
 
     <h2>Kullanıcı Adı</h2>
-    <input type="text" id="kullaniciAdi" placeholder="Kullanıcı adı girin"><br>
+    <input type="text" id="kullaniciAdi" placeholder="Kullanıcı adı girin">
 
     <h2>Şifre</h2>
-    <input type="password" id="sifre" placeholder="Şifre giriniz"><br>
+    <input type="password" id="sifre" placeholder="Şifre giriniz">
 
     <h2>Takım Seçin</h2>
-
     <label>
-        <input type="radio" name="takim" value="Beşiktaş">
-        Beşiktaş
+        <input type="radio" name="takim" value="Beşiktaş"> Beşiktaş
     </label>
-
     <label>
-        <input type="radio" name="takim" value="Galatasaray">
-        Galatasaray
+        <input type="radio" name="takim" value="Galatasaray"> Galatasaray
     </label>
-
     <label>
-        <input type="radio" name="takim" value="Fenerbahçe">
-        Fenerbahçe
+        <input type="radio" name="takim" value="Fenerbahçe"> Fenerbahçe
     </label>
 
     <button onclick="kayitOl()">Kayıt Ol</button>
@@ -81,60 +76,46 @@
 </div>
 
 <script type="module">
-// 1. Firebase importları
+
+// Firebase importları
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import {
-    getAuth,
-    createUserWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-    getFirestore,
-    doc,
-    setDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// KENDİ FIREBASE BİLGİLERİNİ BURAYA YAPIŞTIR
+// Kendi Firebase bilgilerinizi buraya yapıştırın
 const firebaseConfig = {
     apiKey: "AIzaSyDa5AWwxhf7mjzf-W-3CT4WBQhuZ0KVedo",
     authDomain: "farepeynir-d1df0.firebaseapp.com",
     projectId: "farepeynir-d1df0",
-    storageBucket: "farepeynir-d1df0.firebasestorage.app",
+    storageBucket: "farepeynir-d1df0.appspot.com",
     messagingSenderId: "815151330283",
     appId: "1:815151330283:web:f36af249f1701616351fae"
 };
 
-// 2. Firebase Başlatma ve Servisleri Değişkenlere Atama
+// Firebase başlat
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app); // Eksikti, eklendi.
-const db = getFirestore(app); // Eksikti, eklendi.
+const auth = getAuth(app);       // Auth instance
+const db = getFirestore(app);    // Firestore instance
 
-// Kayıt sistemi
-window.kayitOl = async function(){
+// Kayıt fonksiyonu
+window.kayitOl = async function() {
     const ad = document.getElementById("ad").value;
     const soyad = document.getElementById("soyad").value;
     const email = document.getElementById("email").value;
     const kullaniciAdi = document.getElementById("kullaniciAdi").value;
     const sifre = document.getElementById("sifre").value;
 
-    // Seçilen takım
     const takimSecimi = document.querySelector('input[name="takim"]:checked');
     const takim = takimSecimi ? takimSecimi.value : "";
 
-    if(ad == "" || soyad == "" || email == "" || kullaniciAdi == "" || sifre == ""){
+    if(ad === "" || soyad === "" || email === "" || kullaniciAdi === "" || sifre === ""){
         alert("Lütfen tüm alanları doldurun");
         return;
     }
 
-    try{
-        // Firebase Auth kayıt
-        const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            sifre
-        );
-
+    try {
+        // Firebase Auth ile kullanıcı oluştur
+        const userCredential = await createUserWithEmailAndPassword(auth, email, sifre);
         const user = userCredential.user;
 
         // Firestore veri kaydı
@@ -148,10 +129,10 @@ window.kayitOl = async function(){
         });
 
         alert("Kayıt başarılı!");
-        console.log("Kullanıcı oluşturuldu");
+        console.log("Kullanıcı oluşturuldu:", user.uid);
 
-    }catch(error){
-        alert("Hata: " + error.message);
+    } catch(error) {
+        alert(error.message);
         console.error(error);
     }
 }
@@ -159,3 +140,4 @@ window.kayitOl = async function(){
 
 </body>
 </html>
+
